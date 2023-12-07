@@ -30,6 +30,7 @@ import Swal from 'sweetalert2'; // Import the main SweetAlert2 module
 import 'sweetalert2/dist/sweetalert2.min.css'; // Import the CSS file
 import 'sweetalert2/dist/sweetalert2.min.js'; // Import the JavaScript file
 import { selectCurrentUserId } from '../../auth/redux/authSelectors';
+import useSocket from '../../../hooks/useSocket';
 
 export default function SwipeableTemporaryDrawer() {
   const dispatch = useDispatch();
@@ -48,23 +49,17 @@ export default function SwipeableTemporaryDrawer() {
     dispatch(clearCart());
   };
 
- 
   const userId = useSelector(selectCurrentUserId);
-  console.log(userId)
+  console.log(userId);
+  const socket = useSocket();
 
   const handleAlert = async () => {
     try {
       const orderData = {
-        user: userId ,
-        foods: cart.cartItems, 
+        user: userId,
+        foods: cart.cartItems,
       };
-
-      
-      const response = await axios.post(
-        'http://localhost:8080/api/order/ordern',
-        orderData
-      );
-      console.log('Order placed successfully:', response.data);
+      socket.emit('newOrder', orderData);
 
       dispatch(clearCart());
 
@@ -82,7 +77,9 @@ export default function SwipeableTemporaryDrawer() {
       });
     }
   };
-
+  socket?.on('notification', (data) => {
+    console.log(data);
+  });
   useEffect(() => {
     dispatch(subTotal());
   }, [cart, dispatch]);

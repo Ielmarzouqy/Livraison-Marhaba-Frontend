@@ -37,7 +37,12 @@ function App() {
         <Route path="/search/*" element={<SearchMapRoutes />} />
         <Route path="/products/*" element={<ProductRoutes />} />
         <Route path="/dashboard/*" element={<AdminRoutes />} />
-        <Route path="/delivery/*" element={<DeliveryRoutes />} />
+        <Route path="/delivery/*" element={
+          <AuthMiddleware>
+            <DeliveryRoutes />
+          </AuthMiddleware>
+        }
+         />
 
         <Route path="*" element={<NotFoundPage />} />
       </Route>
